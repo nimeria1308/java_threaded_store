@@ -3,10 +3,25 @@ package simonadimitrova.store;
 import sun.plugin.dom.exception.InvalidStateException;
 
 public class CashRegister extends Entity {
+    private static int ID = 0;
+
+    private Store store;
     private ClientThread thread;
+
+    public CashRegister() {
+        this(ID++);
+    }
 
     public CashRegister(int id) {
         super(id);
+    }
+
+    public synchronized Store getStore() {
+        return store;
+    }
+
+    public synchronized void setStore(Store store) {
+        this.store = store;
     }
 
     public synchronized boolean isOpen() {
@@ -20,6 +35,10 @@ public class CashRegister extends Entity {
     public synchronized  void open(Cashier cashier) {
         if (isOpen()) {
             throw new InvalidStateException("Already open");
+        }
+
+        if (store == null) {
+            throw new InvalidStateException("No store");
         }
 
         // run the register in a new thread

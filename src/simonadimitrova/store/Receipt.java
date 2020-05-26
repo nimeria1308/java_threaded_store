@@ -1,30 +1,29 @@
 package simonadimitrova.store;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
 public class Receipt extends Entity {
-    private static int ID = 0;
-
-    public static class Builder {
-        private final Cashier cashier;
-        private final List<ItemCount> items = new ArrayList<>();
-
-        public Builder(Cashier cashier) {
-            this.cashier = cashier;
-        }
-
-//        public void add(Merchandise merchandise, double )
-    }
-
     private final Cashier cashier;
     private final Date dateIssued;
-    private final List<ItemCount> items;
+    private final List<ItemQuantity> items;
 
-    private Receipt(Cashier cashier, Date dateIssued, List<ItemCount> items) {
-        super(ID++);
+    // we need this, as Receipts are created on separate threads
+    private static int ID = 0;
+    private static final Object ID_LOCK = new Object();
+    private static int generateID() {
+        synchronized (ID_LOCK) {
+            return ID++;
+        }
+    }
+
+    public Receipt(Cashier cashier, Date dateIssued, List<ItemQuantity> items) {
+        this(generateID(), cashier, dateIssued, items);
+    }
+
+    public Receipt(int id, Cashier cashier, Date dateIssued, List<ItemQuantity> items) {
+        super(id);
         this.cashier = cashier;
         this.dateIssued = new Date();
         this.items = Collections.unmodifiableList(items);
@@ -32,7 +31,7 @@ public class Receipt extends Entity {
 
     public double getTotal() {
         double total = 0;
-        for (ItemCount item : items) {
+        for (ItemQuantity item : items) {
             total += item.getPrice();
         }
         return total;

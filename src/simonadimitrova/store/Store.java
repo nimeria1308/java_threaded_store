@@ -4,10 +4,10 @@ import java.util.*;
 
 public class Store {
     private final String name;
-    private final Map<Item, Double> items = new HashMap<>();
-    private final Set<Cashier> cashiers = new HashSet<>();
-    private final Set<CashRegister> cashRegisters = new HashSet<>();
-    private final Set<Receipt> receipts = new HashSet<>();
+    private final Map<Integer, ItemQuantity> items = new HashMap<>();
+    private final Map<Integer, Cashier> cashiers = new HashMap<>();
+    private final Map<Integer, CashRegister> cashRegisters = new HashMap<>();
+    private final Map<Integer, Receipt> receipts = new HashMap<>();
 
     public Store(String name) {
         this.name = name;
@@ -19,55 +19,59 @@ public class Store {
 
     public synchronized double getTotalRevenue() {
         double total = 0;
-        for (Receipt receipt : receipts) {
+        for (Receipt receipt : receipts.values()) {
             total += receipt.getTotal();
         }
         return total;
     }
 
     public synchronized void addCashRegister(CashRegister cashRegister) {
-        cashRegisters.add(cashRegister);
+        cashRegister.setStore(this);
+        cashRegisters.put(cashRegister.getId(), cashRegister);
     }
 
     public synchronized void removeCashRegister(CashRegister cashRegister) throws InterruptedException {
         cashRegister.close();
-        cashRegisters.remove(cashRegister);
+        cashRegisters.remove(cashRegister.getId());
+        cashRegister.setStore(null);
+    }
+
+    public synchronized  CashRegister getCashRegister(int id) {
+        return cashRegisters.get(id);
     }
 
     public synchronized void addCashier(Cashier cashier) {
-        cashiers.add(cashier);
+        cashiers.put(cashier.getId(), cashier);
     }
 
     public synchronized void removeCashier(Cashier cashier) throws InterruptedException {
-        for (CashRegister cashRegister : cashRegisters) {
+        for (CashRegister cashRegister : cashRegisters.values()) {
             if (cashier.equals(cashRegister.getCashier())) {
                 cashRegister.close();
             }
         }
 
-        cashiers.remove(cashier);
+        cashiers.remove(cashier.getId());
     }
 
     public synchronized void addItem(Item item, double count) {
-        count += items.getOrDefault(item, 0.0);
-        items.put(item, count);
+        if (!items.containsKey(item.getId())) {
+            items.put(item.getId(), new ItemQuantity(item));
+        }
+
+        items.get(item.getId()).add(count);
     }
 
     public synchronized void removeItem(Item item) {
-        items.remove(item);
+        items.remove(item.getId());
     }
 
     public synchronized void removeItem(Item item, double count) {
-        count = items.getOrDefault(item, 0.0) - count;
-        if (count < 0) {
-            throw new IllegalArgumentException("Not enough of " + item);
-        }
-
-        items.put(item, count);
+        items.get(item.getId()).remove(count);
     }
 
     @Override
-    public String toString() {
+    public synchronized String toString() {
         return String.format(
                 "%s: %d items, %d cashiers, %d receipts");
     }

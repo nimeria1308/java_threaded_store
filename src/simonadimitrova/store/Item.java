@@ -1,13 +1,17 @@
 package simonadimitrova.store;
 
-import java.time.Duration;
-
 public class Item extends Entity {
+    private static int ID = 0;
+
     private String name;
     private double price;
-    private Duration expiry;
+    private int expiry; // in days
 
-    public Item(int id, String name, double price, Duration expiry) {
+    public Item(String name, double price, int expiry) {
+        this(ID++, name, price, expiry);
+    }
+
+    public Item(int id, String name, double price, int expiry) {
         super(id);
         this.name = name;
         this.price = price;
@@ -30,17 +34,17 @@ public class Item extends Entity {
         this.price = price;
     }
 
-    public Duration getExpiry() {
+    public int getExpiry() {
         return expiry;
     }
 
-    public void setDuration(Duration expiry) {
+    public void setDuration(int expiry) {
         this.expiry = expiry;
     }
 
     @Override
     public String toString() {
         return String.format("Item #%d %s %.2f BGN expiration %d days",
-                id, name, price, expiry.toDays());
+                id, name, price, expiry);
     }
 }
