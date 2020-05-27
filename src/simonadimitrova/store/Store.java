@@ -1,7 +1,9 @@
 package simonadimitrova.store;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Store {
     private final String name;

@@ -39,7 +39,7 @@ public class CashRegister extends Entity {
         return thread.cashier;
     }
 
-    public synchronized  void open(Cashier cashier) {
+    public synchronized void open(Cashier cashier) {
         if (isOpen()) {
             throw new InvalidStateException("Already open, close it first");
         }
@@ -131,7 +131,8 @@ public class CashRegister extends Entity {
 
                     try {
                         Thread.sleep(500 + random.nextInt(1500));
-                    } catch (InterruptedException ex) { }
+                    } catch (InterruptedException ex) {
+                    }
                 }
 
                 if (!failed.isEmpty()) {

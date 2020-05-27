@@ -1,7 +1,6 @@
 package simonadimitrova.store;
 
 import java.io.*;
-import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -92,20 +91,19 @@ public class Receipt extends Entity {
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-                builder
-                        .append("Receipt #").append(id).append(": ").append(items.size()).append(" items\n\n");
+        builder.append("Receipt #").append(id).append(": ").append(items.size()).append(" items\n\n");
 
-                int i = 1;
-                for (ItemQuantity item : items) {
-                    builder.append("  ").append(i++).append(". ").append(item).append('\n');
-                }
-                builder.append('\n');
+        int i = 1;
+        for (ItemQuantity item : items) {
+            builder.append("  ").append(i++).append(". ").append(item).append('\n');
+        }
+        builder.append('\n');
 
-                builder.append(String.format("Total: %.2f BGN\n", getTotal()));
+        builder.append(String.format("Total: %.2f BGN\n", getTotal()));
 
-                builder.append("----------\n");
-                builder.append("Cashier: ").append(cashier).append('\n');
-                builder.append("Issued: ").append(dateIssued).append('\n');
+        builder.append("----------\n");
+        builder.append("Cashier: ").append(cashier).append('\n');
+        builder.append("Issued: ").append(dateIssued).append('\n');
         return builder.toString();
     }
 }

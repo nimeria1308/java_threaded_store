@@ -108,6 +108,9 @@ public class Main {
             store.getCashRegister(i).close();
         }
 
+        // print store info
+        System.out.println(store);
+
         // print receipts
         System.out.println("All receipts:");
         Collection<Receipt> receipts = store.getReceipts();
@@ -115,7 +118,6 @@ public class Main {
             System.out.println(receipt);
         }
 
-        System.out.println(store);
         System.out.println(String.format(
                 "Total store revenue: %.2f", store.getTotalRevenue()));
 
@@ -123,7 +125,7 @@ public class Main {
         System.out.println("All receipts read from file:");
         for (int i = 0; i < receipts.size(); i++) {
             Receipt receipt = Receipt.fromFile(String.format("receipt-%d.bin", i), store);
-            System.out.print(receipt);
+            System.out.println(receipt);
         }
     }
 }
