@@ -5,14 +5,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class Receipt extends Entity {
-    private final Cashier cashier;
-    private final Date dateIssued;
-    private final List<ItemQuantity> items;
-
-    private static int ID = 0;
-
+public class Receipt {
     // we need this, as receipts are created on separate threads
+    private static int ID = 0;
     private static final Object ID_LOCK = new Object();
     private static int generateID() {
         synchronized (ID_LOCK) {
@@ -20,15 +15,24 @@ public class Receipt extends Entity {
         }
     }
 
+    private final int id;
+    private final Cashier cashier;
+    private final Date dateIssued;
+    private final List<ItemQuantity> items;
+
     public Receipt(Cashier cashier, Date dateIssued, List<ItemQuantity> items) {
         this(generateID(), cashier, dateIssued, items);
     }
 
     public Receipt(int id, Cashier cashier, Date dateIssued, List<ItemQuantity> items) {
-        super(id);
+        this.id = id;
         this.cashier = cashier;
-        this.dateIssued = new Date();
+        this.dateIssued = dateIssued;
         this.items = new ArrayList<>(items);
+    }
+
+    public int getId() {
+        return id;
     }
 
     public Cashier getCashier() {

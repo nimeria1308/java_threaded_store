@@ -5,12 +5,13 @@ import sun.plugin.dom.exception.InvalidStateException;
 import java.io.IOException;
 import java.util.*;
 
-public class CashRegister extends Entity {
+public class CashRegister {
     private static int ID = 0;
 
     // used to generate the effect of processing time
     private final Random random;
 
+    private final int id;
     private Store store;
     private ClientThread thread;
 
@@ -19,8 +20,12 @@ public class CashRegister extends Entity {
     }
 
     public CashRegister(int id) {
-        super(id);
+        this.id = id;
         random = new Random(id);
+    }
+
+    public int getId() {
+        return id;
     }
 
     public synchronized Store getStore() {
@@ -58,7 +63,7 @@ public class CashRegister extends Entity {
 
         synchronized (CashRegister.this) {
             if (!isOpen()) {
-                // alredy closed
+                // already closed
                 return;
             }
 
@@ -130,6 +135,7 @@ public class CashRegister extends Entity {
                     }
 
                     try {
+                        // make it look as though the cashier is taking time to serve the client
                         Thread.sleep(500 + random.nextInt(1500));
                     } catch (InterruptedException ex) {
                     }
@@ -141,7 +147,7 @@ public class CashRegister extends Entity {
                         store.addItem(item.getItem(), item.getQuantity());
                     }
 
-                    System.out.println(this + ": failed processing client due to insufficient items:");
+                    System.err.println(this + ": failed processing client due to insufficient items:");
                     for (InsufficientItemQuantityException e : failed) {
                         System.err.println(this + ": " + e.getMessage());
                     }

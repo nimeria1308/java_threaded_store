@@ -1,6 +1,6 @@
 package simonadimitrova.store;
 
-public class InsufficientItemQuantityException extends StoreException {
+public class InsufficientItemQuantityException extends Exception {
     private final ItemQuantity itemQuantity;
 
     public InsufficientItemQuantityException(ItemQuantity itemQuantity) {

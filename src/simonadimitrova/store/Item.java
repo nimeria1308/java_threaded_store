@@ -1,8 +1,9 @@
 package simonadimitrova.store;
 
-public class Item extends Entity {
+public class Item {
     private static int ID = 0;
 
+    private final int id;
     private String name;
     private double price;
     private int expiry; // in days
@@ -12,10 +13,14 @@ public class Item extends Entity {
     }
 
     public Item(int id, String name, double price, int expiry) {
-        super(id);
+        this.id = id;
         this.name = name;
         this.price = price;
         this.expiry = expiry;
+    }
+
+    public int getId() {
+        return id;
     }
 
     public String getName() {
@@ -38,7 +43,7 @@ public class Item extends Entity {
         return expiry;
     }
 
-    public void setDuration(int expiry) {
+    public void setExpiry(int expiry) {
         this.expiry = expiry;
     }
 

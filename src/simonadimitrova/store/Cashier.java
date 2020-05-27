@@ -1,8 +1,9 @@
 package simonadimitrova.store;
 
-public class Cashier extends Entity {
+public class Cashier {
     private static int ID = 0;
 
+    private final int id;
     private String name;
 
     public Cashier(String name) {
@@ -10,8 +11,12 @@ public class Cashier extends Entity {
     }
 
     public Cashier(int id, String name) {
-        super(id);
+        this.id = id;
         this.name = name;
+    }
+
+    public int getId() {
+        return id;
     }
 
     public String getName() {
