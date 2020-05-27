@@ -1,5 +1,7 @@
 package simonadimitrova.store;
 
+import java.io.*;
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -48,6 +50,43 @@ public class Receipt extends Entity {
             total += item.getPrice();
         }
         return total;
+    }
+
+    public void toFile(String filename) throws IOException {
+        try (OutputStream out = new FileOutputStream(filename)) {
+            try (DataOutputStream dout = new DataOutputStream(out)) {
+                dout.writeInt(id);
+                dout.writeInt(cashier.getId());
+                dout.writeLong(dateIssued.getTime());
+
+                dout.writeInt(items.size());
+                for (ItemQuantity item : items) {
+                    dout.writeInt(item.getItem().getId());
+                    dout.writeDouble(item.getQuantity());
+                }
+            }
+        }
+    }
+
+    public static Receipt fromFile(String filename, Store store) throws IOException {
+        try (InputStream in = new FileInputStream(filename)) {
+            try (DataInputStream din = new DataInputStream(in)) {
+                int id = din.readInt();
+                Cashier cashier = store.getCashier(din.readInt());
+                Date dateIssued = new Date(din.readLong());
+
+                int count = din.readInt();
+                List<ItemQuantity> items = new ArrayList<>(count);
+                for (int i = 0; i < count; i++) {
+                    items.add(new ItemQuantity(
+                            store.getItem(din.readInt()),
+                            din.readDouble()
+                    ));
+                }
+
+                return new Receipt(id, cashier, dateIssued, items);
+            }
+        }
     }
 
     @Override

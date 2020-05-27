@@ -2,10 +2,8 @@ package simonadimitrova.store;
 
 import sun.plugin.dom.exception.InvalidStateException;
 
-import java.util.ArrayDeque;
-import java.util.Date;
-import java.util.Queue;
-import java.util.Random;
+import java.io.IOException;
+import java.util.*;
 
 public class CashRegister extends Entity {
     private static int ID = 0;
@@ -71,9 +69,7 @@ public class CashRegister extends Entity {
             notifyAll();
         }
 
-        System.out.println("CashRegister " + id + " about to join");
         thread.join();
-        System.out.println("CashRegister " + id + " joined");
     }
 
     public synchronized void queueClient(Client client) {
@@ -119,31 +115,60 @@ public class CashRegister extends Entity {
                     client = clients.remove();
                 }
 
-                // TODO: process client
-                System.out.println(this + ": processing with " + client.items.size() + " items");
+                System.out.println(this + ": processing client with " + client.items.size() + " items");
+
+                List<ItemQuantity> passed = new ArrayList<>();
+                List<InsufficientItemQuantityException> failed = new ArrayList<>();
+
                 for (ItemQuantity item : client.items) {
-                    System.out.println(this + " processing " + item);
+                    System.out.println(this + ": processing " + item);
+                    try {
+                        store.removeItem(item.getItem(), item.getQuantity());
+                        passed.add(item);
+                    } catch (InsufficientItemQuantityException e) {
+                        failed.add(e);
+                    }
 
                     try {
                         Thread.sleep(500 + random.nextInt(1500));
                     } catch (InterruptedException ex) { }
                 }
 
-                Receipt receipt = new Receipt(cashier, new Date(), client.items);
-                store.addReceipt(receipt);
-                System.out.println("Issue receipt #" + receipt.getId());
+                if (!failed.isEmpty()) {
+                    for (ItemQuantity item : passed) {
+                        // restore the passed items
+                        store.addItem(item.getItem(), item.getQuantity());
+                    }
+
+                    System.out.println(this + ": failed processing client due to insufficient items:");
+                    for (InsufficientItemQuantityException e : failed) {
+                        System.err.println(this + ": " + e.getMessage());
+                    }
+                } else {
+                    // all was fine, issue a receipt
+                    Receipt receipt = new Receipt(cashier, new Date(), client.items);
+                    try {
+                        store.addReceipt(receipt);
+                    } catch (IOException e) {
+                        System.err.println("Could not save receipt " + receipt.getId());
+                        e.printStackTrace();
+                    }
+                    System.out.println(String.format(
+                            "%s: issued receipt #%d (total: %.2f BGN)",
+                            this, receipt.getId(), receipt.getTotal()));
+                }
             }
         }
 
         @Override
         public String toString() {
-            return String.format("CashRegister #%d %s", id, cashier);
+            return String.format("CashRegister #%d (%s)", id, cashier);
         }
     }
 
     @Override
     public synchronized String toString() {
-        return String.format("CashRegister #%d %s",
+        return String.format("CashRegister #%d (%s)",
                 id, isOpen() ? getCashier() : "CLOSED");
     }
 }

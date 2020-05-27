@@ -25,14 +25,21 @@ public class ItemQuantity {
         if (quantity < 0) {
             throw new InsufficientItemQuantityException(new ItemQuantity(item, -quantity));
         }
+
+        this.quantity = quantity;
     }
 
-    public void add(double count) throws InsufficientItemQuantityException {
-        setQuantity(this.quantity + count);
+    public void add(double quantity) {
+        try {
+            setQuantity(this.quantity + quantity);
+        } catch (InsufficientItemQuantityException e) {
+            // this should never happen (i.e. quantity shan't be negative
+            throw new IllegalStateException(e);
+        }
     }
 
-    public void remove(double count) throws InsufficientItemQuantityException {
-        setQuantity(this.quantity - count);
+    public void remove(double quantity) throws InsufficientItemQuantityException {
+        setQuantity(this.quantity - quantity);
     }
 
     public double getPrice() {

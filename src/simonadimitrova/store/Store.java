@@ -1,5 +1,6 @@
 package simonadimitrova.store;
 
+import java.io.IOException;
 import java.util.*;
 
 public class Store {
@@ -58,20 +59,20 @@ public class Store {
         return cashiers.values();
     }
 
-    public synchronized void addItem(Item item, double count) throws InsufficientItemQuantityException {
+    public synchronized void addItem(Item item, double quantity) {
         if (!items.containsKey(item.getId())) {
             items.put(item.getId(), new ItemQuantity(item));
         }
 
-        items.get(item.getId()).add(count);
+        items.get(item.getId()).add(quantity);
     }
 
     public synchronized void removeItem(Item item) {
         items.remove(item.getId());
     }
 
-    public synchronized void removeItem(Item item, double count) throws InsufficientItemQuantityException {
-        items.get(item.getId()).remove(count);
+    public synchronized void removeItem(Item item, double quantity) throws InsufficientItemQuantityException {
+        items.get(item.getId()).remove(quantity);
     }
 
     public synchronized Item getItem(int id) {
@@ -86,8 +87,9 @@ public class Store {
         return items.values();
     }
 
-    public synchronized void addReceipt(Receipt receipt) {
+    public synchronized void addReceipt(Receipt receipt) throws IOException {
         receipts.put(receipt.getId(), receipt);
+        receipt.toFile(String.format("receipt-%d.bin", receipt.getId()));
     }
 
     public synchronized Receipt getReceipt(int id) {
@@ -110,6 +112,7 @@ public class Store {
     @Override
     public synchronized String toString() {
         return String.format(
-                "%s: %d items, %d cashiers, %d receipts");
+                "%s: %d items, %d cash registers, %d cashiers, %d receipts", name,
+                items.size(), cashRegisters.size(), cashiers.size(), receipts.size());
     }
 }

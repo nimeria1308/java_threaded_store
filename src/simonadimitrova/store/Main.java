@@ -1,9 +1,11 @@
 package simonadimitrova.store;
 
+import java.util.Collection;
+
 public class Main {
     public static void main(String[] args) throws Exception {
         // Create a new store
-        Store store = new Store("T market");
+        Store store = new Store("T Market");
 
         // Add 3 cash registers
         store.addCashRegister(new CashRegister());
@@ -75,10 +77,19 @@ public class Main {
                                 new ItemQuantity(store.getItem(3), 4),
                         }));
 
+        store.getCashRegister(1).queueClient(
+                new Client(
+                        new ItemQuantity[] {
+                                new ItemQuantity(store.getItem(10), 7),
+                                new ItemQuantity(store.getItem(11), 4),
+                                new ItemQuantity(store.getItem(12), 20),
+                                new ItemQuantity(store.getItem(0), 2),
+                        }));
+
         store.getCashRegister(2).queueClient(
                 new Client(
                         new ItemQuantity[] {
-                                new ItemQuantity(store.getItem(10), 5),
+                                new ItemQuantity(store.getItem(10), 22),
                                 new ItemQuantity(store.getItem(11), 5),
                                 new ItemQuantity(store.getItem(12), 15),
                                 new ItemQuantity(store.getItem(0), 10),
@@ -87,7 +98,9 @@ public class Main {
         store.getCashRegister(2).queueClient(
                 new Client(
                         new ItemQuantity[] {
-                                new ItemQuantity(store.getItem(0), 10),
+                                new ItemQuantity(store.getItem(4), 4),
+                                new ItemQuantity(store.getItem(2), 3),
+                                new ItemQuantity(store.getItem(8), 6),
                         }));
 
         //  Start closing the registers and wait for clients to be processed
@@ -96,11 +109,21 @@ public class Main {
         }
 
         // print receipts
-        for (Receipt receipt : store.getReceipts()) {
+        System.out.println("All receipts:");
+        Collection<Receipt> receipts = store.getReceipts();
+        for (Receipt receipt : receipts) {
             System.out.println(receipt);
         }
 
+        System.out.println(store);
         System.out.println(String.format(
                 "Total store revenue: %.2f", store.getTotalRevenue()));
+
+        // Now try loading the receipts
+        System.out.println("All receipts read from file:");
+        for (int i = 0; i < receipts.size(); i++) {
+            Receipt receipt = Receipt.fromFile(String.format("receipt-%d.bin", i), store);
+            System.out.print(receipt);
+        }
     }
 }
