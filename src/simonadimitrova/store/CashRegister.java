@@ -3,6 +3,7 @@ package simonadimitrova.store;
 import sun.plugin.dom.exception.InvalidStateException;
 
 import java.util.ArrayDeque;
+import java.util.Date;
 import java.util.Queue;
 import java.util.Random;
 
@@ -127,6 +128,10 @@ public class CashRegister extends Entity {
                         Thread.sleep(500 + random.nextInt(1500));
                     } catch (InterruptedException ex) { }
                 }
+
+                Receipt receipt = new Receipt(cashier, new Date(), client.items);
+                store.addReceipt(receipt);
+                System.out.println("Issue receipt #" + receipt.getId());
             }
         }
 

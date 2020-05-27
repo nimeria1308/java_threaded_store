@@ -17,14 +17,6 @@ public class Store {
         return name;
     }
 
-    public synchronized double getTotalRevenue() {
-        double total = 0;
-        for (Receipt receipt : receipts.values()) {
-            total += receipt.getTotal();
-        }
-        return total;
-    }
-
     public synchronized void addCashRegister(CashRegister cashRegister) {
         cashRegister.setStore(this);
         cashRegisters.put(cashRegister.getId(), cashRegister);
@@ -38,6 +30,10 @@ public class Store {
 
     public synchronized CashRegister getCashRegister(int id) {
         return cashRegisters.get(id);
+    }
+
+    public synchronized Collection<CashRegister> getCashRegisters() {
+        return cashRegisters.values();
     }
 
     public synchronized void addCashier(Cashier cashier) {
@@ -56,6 +52,10 @@ public class Store {
 
     public synchronized Cashier getCashier(int id) {
         return cashiers.get(id);
+    }
+
+    public synchronized Collection<Cashier> getCashiers() {
+        return cashiers.values();
     }
 
     public synchronized void addItem(Item item, double count) throws InsufficientItemQuantityException {
@@ -77,6 +77,35 @@ public class Store {
     public synchronized Item getItem(int id) {
         return items.get(id).getItem();
     }
+
+    public synchronized ItemQuantity getItemQuantity(int id) {
+        return items.get(id);
+    }
+
+    public synchronized Collection<ItemQuantity> getItemQuantities() {
+        return items.values();
+    }
+
+    public synchronized void addReceipt(Receipt receipt) {
+        receipts.put(receipt.getId(), receipt);
+    }
+
+    public synchronized Receipt getReceipt(int id) {
+        return receipts.get(id);
+    }
+
+    public synchronized Collection<Receipt> getReceipts() {
+        return receipts.values();
+    }
+
+    public synchronized double getTotalRevenue() {
+        double total = 0;
+        for (Receipt receipt : receipts.values()) {
+            total += receipt.getTotal();
+        }
+        return total;
+    }
+
 
     @Override
     public synchronized String toString() {

@@ -94,5 +94,13 @@ public class Main {
         for (int i = 0; i < 3; i++) {
             store.getCashRegister(i).close();
         }
+
+        // print receipts
+        for (Receipt receipt : store.getReceipts()) {
+            System.out.println(receipt);
+        }
+
+        System.out.println(String.format(
+                "Total store revenue: %.2f", store.getTotalRevenue()));
     }
 }

@@ -42,7 +42,7 @@ public class ItemQuantity {
     @Override
     public String toString() {
         return String.format(
-                "%s (#%d) %.2f: %f x %.2f",
+                "%s (#%d) %.2f BGN: %.2f x %.2f BGN",
                 item.getName(), item.getId(), getPrice(),
                 quantity, item.getPrice()
         );

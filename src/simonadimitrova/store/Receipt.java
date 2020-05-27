@@ -1,6 +1,6 @@
 package simonadimitrova.store;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -9,8 +9,9 @@ public class Receipt extends Entity {
     private final Date dateIssued;
     private final List<ItemQuantity> items;
 
-    // we need this, as Receipts are created on separate threads
     private static int ID = 0;
+
+    // we need this, as receipts are created on separate threads
     private static final Object ID_LOCK = new Object();
     private static int generateID() {
         synchronized (ID_LOCK) {
@@ -26,7 +27,19 @@ public class Receipt extends Entity {
         super(id);
         this.cashier = cashier;
         this.dateIssued = new Date();
-        this.items = Collections.unmodifiableList(items);
+        this.items = new ArrayList<>(items);
+    }
+
+    public Cashier getCashier() {
+        return cashier;
+    }
+
+    public Date getDateIssued() {
+        return dateIssued;
+    }
+
+    public List<ItemQuantity> getItems() {
+        return items;
     }
 
     public double getTotal() {
@@ -39,13 +52,21 @@ public class Receipt extends Entity {
 
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder()
-                .append("Receipt ---").append(id).append("\n\n");
-
+        StringBuilder builder = new StringBuilder();
                 builder
-                .append("  Cashier: ").append(cashier)
-                .append("  Issued: ").append(dateIssued)
-                ;
-        return super.toString();
+                        .append("Receipt #").append(id).append(": ").append(items.size()).append(" items\n\n");
+
+                int i = 1;
+                for (ItemQuantity item : items) {
+                    builder.append("  ").append(i++).append(". ").append(item).append('\n');
+                }
+                builder.append('\n');
+
+                builder.append(String.format("Total: %.2f BGN\n", getTotal()));
+
+                builder.append("----------\n");
+                builder.append("Cashier: ").append(cashier).append('\n');
+                builder.append("Issued: ").append(dateIssued).append('\n');
+        return builder.toString();
     }
 }
