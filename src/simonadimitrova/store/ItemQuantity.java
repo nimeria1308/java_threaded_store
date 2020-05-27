@@ -2,41 +2,41 @@ package simonadimitrova.store;
 
 public class ItemQuantity {
     private final Item item;
-    private double count;
+    private double quantity;
 
     public ItemQuantity(Item item) {
         this(item, 0);
     }
 
-    public ItemQuantity(Item item, double count) {
+    public ItemQuantity(Item item, double quantity) {
         this.item = item;
-        this.count = count;
+        this.quantity = quantity;
     }
 
     public Item getItem() {
         return item;
     }
 
-    public double getCount() {
-        return count;
+    public double getQuantity() {
+        return quantity;
     }
 
-    public void setCount(double count) {
-        if (count < 0) {
-            throw new IllegalArgumentException("Not enough quantity of " + item.getName());
+    public void setQuantity(double quantity) throws InsufficientItemQuantityException {
+        if (quantity < 0) {
+            throw new InsufficientItemQuantityException(new ItemQuantity(item, -quantity));
         }
     }
 
-    public void add(double count) {
-        setCount(this.count + count);
+    public void add(double count) throws InsufficientItemQuantityException {
+        setQuantity(this.quantity + count);
     }
 
-    public void remove(double count) {
-        setCount(this.count - count);
+    public void remove(double count) throws InsufficientItemQuantityException {
+        setQuantity(this.quantity - count);
     }
 
     public double getPrice() {
-        return item.getPrice() * count;
+        return item.getPrice() * quantity;
     }
 
     @Override
@@ -44,7 +44,7 @@ public class ItemQuantity {
         return String.format(
                 "%s (#%d) %.2f: %f x %.2f",
                 item.getName(), item.getId(), getPrice(),
-                count, item.getPrice()
+                quantity, item.getPrice()
         );
     }
 }

@@ -36,7 +36,7 @@ public class Store {
         cashRegister.setStore(null);
     }
 
-    public synchronized  CashRegister getCashRegister(int id) {
+    public synchronized CashRegister getCashRegister(int id) {
         return cashRegisters.get(id);
     }
 
@@ -54,7 +54,11 @@ public class Store {
         cashiers.remove(cashier.getId());
     }
 
-    public synchronized void addItem(Item item, double count) {
+    public synchronized Cashier getCashier(int id) {
+        return cashiers.get(id);
+    }
+
+    public synchronized void addItem(Item item, double count) throws InsufficientItemQuantityException {
         if (!items.containsKey(item.getId())) {
             items.put(item.getId(), new ItemQuantity(item));
         }
@@ -66,8 +70,12 @@ public class Store {
         items.remove(item.getId());
     }
 
-    public synchronized void removeItem(Item item, double count) {
+    public synchronized void removeItem(Item item, double count) throws InsufficientItemQuantityException {
         items.get(item.getId()).remove(count);
+    }
+
+    public synchronized Item getItem(int id) {
+        return items.get(id).getItem();
     }
 
     @Override
