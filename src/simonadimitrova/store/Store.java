@@ -27,8 +27,8 @@ public class Store {
 
     public synchronized void removeCashRegister(CashRegister cashRegister) throws InterruptedException {
         cashRegister.close();
-        cashRegisters.remove(cashRegister.getId());
         cashRegister.setStore(null);
+        cashRegisters.remove(cashRegister.getId());
     }
 
     public synchronized CashRegister getCashRegister(int id) {

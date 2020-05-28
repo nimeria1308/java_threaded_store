@@ -1,7 +1,5 @@
 package simonadimitrova.store;
 
-import sun.plugin.dom.exception.InvalidStateException;
-
 import java.io.IOException;
 import java.util.*;
 
@@ -46,11 +44,11 @@ public class CashRegister {
 
     public synchronized void open(Cashier cashier) {
         if (isOpen()) {
-            throw new InvalidStateException("Already open, close it first");
+            throw new IllegalStateException("Already open, close it first");
         }
 
         if (store == null) {
-            throw new InvalidStateException("No store");
+            throw new IllegalStateException("No store");
         }
 
         // run the register in a new thread
@@ -79,7 +77,7 @@ public class CashRegister {
 
     public synchronized void queueClient(Client client) {
         if (!isOpen()) {
-            throw new InvalidStateException("Cash register not open");
+            throw new IllegalStateException("Cash register not open");
         }
 
         thread.clients.add(client);
@@ -153,13 +151,13 @@ public class CashRegister {
                     }
                 } else {
                     // all was fine, issue a receipt
-                    Receipt receipt = new Receipt(cashier, new Date(), client.items);
+                    Receipt receipt = new Receipt(cashier, new Date(), passed);
                     try {
                         store.addReceipt(receipt);
                     } catch (IOException e) {
-                        System.err.println("Could not save receipt " + receipt.getId());
-                        e.printStackTrace();
+                        System.err.println("Could not save receipt " + receipt.getId() + ": " + e.getMessage());
                     }
+
                     System.out.println(String.format(
                             "%s: issued receipt #%d (total: %.2f BGN)",
                             this, receipt.getId(), receipt.getTotal()));
